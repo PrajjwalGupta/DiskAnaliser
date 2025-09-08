@@ -8,14 +8,24 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var fetcher = DiskInfoFetcher()
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+//            Button("Fetch") {
+//                let output = try? fetcher.execute("df -k")
+//                print(output ?? "none")
+//            }
+            Text("fetched \(fetcher.diskInfos.count)")
         }
         .padding()
+        .task {
+            do {
+                fetcher.diskInfos = try await fetcher.getDiskInfo()
+            } catch {
+                fetcher.error = error
+                }
+        }
     }
 }
 
